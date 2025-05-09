@@ -27,39 +27,53 @@ except ModuleNotFoundError as e:
     st.error(f"❌ Missing module: `{e.name}`. Please add it to `requirements.txt`.")
     st.stop()
 
-# Collect user inputs (14 shown, add the remaining 16 features here)
+# Collect user inputs
 age = st.number_input("Age", min_value=18, max_value=100, value=35)
 gender = st.selectbox("Gender", ["Male", "Female"])
+senior_citizen = st.selectbox("Senior Citizen (1 = Yes, 0 = No)", [0, 1])
+partner = st.selectbox("Partner (Yes/No)", ["Yes", "No"])
+dependents = st.selectbox("Dependents (Yes/No)", ["Yes", "No"])
 tenure = st.slider("Tenure (months)", 0, 72, 12)
-balance = st.number_input("Account Balance", min_value=0.0, value=50000.0)
-num_of_products = st.selectbox("Number of Products", [1, 2, 3, 4])
-has_cr_card = st.selectbox("Has Credit Card", ["Yes", "No"])
-is_active = st.selectbox("Active Member", ["Yes", "No"])
-salary = st.number_input("Estimated Salary", min_value=0.0, value=70000.0)
-geography = st.selectbox("Geography", ["France", "Germany", "Spain"])
-credit_score = st.number_input("Credit Score", min_value=300, max_value=850, value=650)
+phoneservice = st.selectbox("Phone Service (Yes/No)", ["Yes", "No"])
+multiplelines = st.selectbox("Multiple Lines (Yes/No)", ["Yes", "No"])
+internetservice = st.selectbox("Internet Service (DSL/Fiber optic/No)", ["DSL", "Fiber optic", "No"])
+onlinesecurity = st.selectbox("Online Security (Yes/No)", ["Yes", "No"])
+onlinebackup = st.selectbox("Online Backup (Yes/No)", ["Yes", "No"])
+deviceprotection = st.selectbox("Device Protection (Yes/No)", ["Yes", "No"])
+techsupport = st.selectbox("Tech Support (Yes/No)", ["Yes", "No"])
+streamingtv = st.selectbox("Streaming TV (Yes/No)", ["Yes", "No"])
+streamingmovies = st.selectbox("Streaming Movies (Yes/No)", ["Yes", "No"])
+contract = st.selectbox("Contract (Month-to-month, One year, Two year)", ["Month-to-month", "One year", "Two year"])
+paperlessbilling = st.selectbox("Paperless Billing (Yes/No)", ["Yes", "No"])
+paymentmethod = st.selectbox("Payment Method (Electronic check, Mailed check, Bank transfer, Credit card)", 
+                             ["Electronic check", "Mailed check", "Bank transfer", "Credit card"])
+monthlycharges = st.number_input("Monthly Charges", min_value=0.0, value=70.0)
+totalcharges = st.number_input("Total Charges", min_value=0.0, value=2000.0)
 
-# Placeholder for 16 additional features (replace with the actual features)
-extra_feature_1 = st.number_input("Extra Feature 1", min_value=0.0, value=1.0)
-extra_feature_2 = st.number_input("Extra Feature 2", min_value=0.0, value=1.0)
-# Repeat this for all 16 additional features
-extra_feature_3 = st.number_input("Extra Feature 3", min_value=0.0, value=1.0)
-extra_feature_4 = st.number_input("Extra Feature 4", min_value=0.0, value=1.0)
-# Continue adding until you have 30 features in total...
-
-# Convert categorical to numeric
+# Convert categorical variables to numeric (Label Encoding for binary features)
 gender_val = 1 if gender == "Male" else 0
-has_cr_card_val = 1 if has_cr_card == "Yes" else 0
-is_active_val = 1 if is_active == "Yes" else 0
-geo_val = {"France": 0, "Germany": 1, "Spain": 2}[geography]
+partner_val = 1 if partner == "Yes" else 0
+dependents_val = 1 if dependents == "Yes" else 0
+phoneservice_val = 1 if phoneservice == "Yes" else 0
+multiplelines_val = 1 if multiplelines == "Yes" else 0
+onlinesecurity_val = 1 if onlinesecurity == "Yes" else 0
+onlinebackup_val = 1 if onlinebackup == "Yes" else 0
+deviceprotection_val = 1 if deviceprotection == "Yes" else 0
+techsupport_val = 1 if techsupport == "Yes" else 0
+streamingtv_val = 1 if streamingtv == "Yes" else 0
+streamingmovies_val = 1 if streamingmovies == "Yes" else 0
+paperlessbilling_val = 1 if paperlessbilling == "Yes" else 0
 
-# Combine all features into one input array (now with 30 features)
-input_data = np.array([[age, gender_val, tenure, balance, num_of_products,
-                        has_cr_card_val, is_active_val, salary,
-                        geo_val, credit_score,
-                        extra_feature_1, extra_feature_2, extra_feature_3, extra_feature_4, 
-                        # Add remaining features...
-                        ]])
+# One-hot encoding for categorical features with more than two categories
+contract_val = {"Month-to-month": 0, "One year": 1, "Two year": 2}[contract]
+internetservice_val = {"DSL": 0, "Fiber optic": 1, "No": 2}[internetservice]
+paymentmethod_val = {"Electronic check": 0, "Mailed check": 1, "Bank transfer": 2, "Credit card": 3}[paymentmethod]
+
+# Combine all features into one input array
+input_data = np.array([[age, gender_val, senior_citizen, partner_val, dependents_val, tenure, phoneservice_val,
+                        multiplelines_val, internetservice_val, onlinesecurity_val, onlinebackup_val, 
+                        deviceprotection_val, techsupport_val, streamingtv_val, streamingmovies_val, 
+                        contract_val, paperlessbilling_val, paymentmethod_val, monthlycharges, totalcharges]])
 
 # Validate number of features
 if input_data.shape[1] != scaler.n_features_in_:
