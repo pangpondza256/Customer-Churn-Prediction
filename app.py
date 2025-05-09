@@ -28,22 +28,27 @@ except ModuleNotFoundError as e:
     st.stop()
 
 # Collect user inputs for important features
-age = st.number_input("Age", min_value=18, max_value=100, value=35)
 tenure = st.slider("Tenure (months)", 0, 72, 12)
-monthlycharges = st.number_input("Monthly Charges", min_value=0.0, value=70.0)
-totalcharges = st.number_input("Total Charges", min_value=0.0, value=2000.0)
-
-# Categorical Features
 contract = st.selectbox("Contract (Month-to-month, One year, Two year)", ["Month-to-month", "One year", "Two year"])
+monthlycharges = st.number_input("Monthly Charges", min_value=0.0, value=70.0)
 paymentmethod = st.selectbox("Payment Method (Electronic check, Mailed check, Bank transfer, Credit card)", 
                              ["Electronic check", "Mailed check", "Bank transfer", "Credit card"])
+paperlessbilling = st.selectbox("Paperless Billing (Yes/No)", ["Yes", "No"])
+internetservice = st.selectbox("Internet Service (DSL/Fiber optic/No)", ["DSL", "Fiber optic", "No"])
+streamingtv = st.selectbox("Streaming TV (Yes/No)", ["Yes", "No"])
+streamingmovies = st.selectbox("Streaming Movies (Yes/No)", ["Yes", "No"])
 
 # Convert categorical variables to numeric (Label Encoding for binary features)
 contract_val = {"Month-to-month": 0, "One year": 1, "Two year": 2}[contract]
 paymentmethod_val = {"Electronic check": 0, "Mailed check": 1, "Bank transfer": 2, "Credit card": 3}[paymentmethod]
+internetservice_val = {"DSL": 0, "Fiber optic": 1, "No": 2}[internetservice]
+paperlessbilling_val = 1 if paperlessbilling == "Yes" else 0
+streamingtv_val = 1 if streamingtv == "Yes" else 0
+streamingmovies_val = 1 if streamingmovies == "Yes" else 0
 
-# Combine all features into one input array (only important features)
-input_data = np.array([[age, tenure, monthlycharges, totalcharges, contract_val, paymentmethod_val]])
+# Combine all features into one input array
+input_data = np.array([[tenure, contract_val, monthlycharges, paymentmethod_val, paperlessbilling_val, 
+                        internetservice_val, streamingtv_val, streamingmovies_val]])
 
 # Validate number of features
 if input_data.shape[1] != scaler.n_features_in_:
