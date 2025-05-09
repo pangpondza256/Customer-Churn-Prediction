@@ -34,7 +34,7 @@ monthlycharges = st.number_input("Monthly Charges", min_value=0.0, value=70.0)
 totalcharges = st.number_input("Total Charges", min_value=0.0, value=2000.0)
 
 # Categorical Features
-contract = st.selectbox("Contract (Month-to-month, One year, Two year)", ["Month-to-month", "One year", "Two year,"Three year"])
+contract = st.selectbox("Contract (Month-to-month, One year, Two year)", ["Month-to-month", "One year", "Two year"])
 paymentmethod = st.selectbox("Payment Method (Electronic check, Mailed check, Bank transfer, Credit card)", 
                              ["Electronic check", "Mailed check", "Bank transfer", "Credit card"])
 
