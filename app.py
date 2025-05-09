@@ -27,28 +27,23 @@ except ModuleNotFoundError as e:
     st.error(f"❌ Missing module: `{e.name}`. Please add it to `requirements.txt`.")
     st.stop()
 
-# Collect user inputs
+# Collect user inputs for important features
 age = st.number_input("Age", min_value=18, max_value=100, value=35)
-gender = st.selectbox("Gender", ["Male", "Female"])
 tenure = st.slider("Tenure (months)", 0, 72, 12)
-balance = st.number_input("Account Balance", min_value=0.0, value=50000.0)
-num_of_products = st.selectbox("Number of Products", [1, 2, 3, 4])
-has_cr_card = st.selectbox("Has Credit Card", ["Yes", "No"])
-is_active = st.selectbox("Active Member", ["Yes", "No"])
-salary = st.number_input("Estimated Salary", min_value=0.0, value=70000.0)
-geography = st.selectbox("Geography", ["France", "Germany", "Spain"])
-credit_score = st.number_input("Credit Score", min_value=300, max_value=850, value=650)
+monthlycharges = st.number_input("Monthly Charges", min_value=0.0, value=70.0)
+totalcharges = st.number_input("Total Charges", min_value=0.0, value=2000.0)
 
-# Convert categorical variables to numeric
-gender_val = 1 if gender == "Male" else 0
-has_cr_card_val = 1 if has_cr_card == "Yes" else 0
-is_active_val = 1 if is_active == "Yes" else 0
-geo_val = {"France": 0, "Germany": 1, "Spain": 2}[geography]
+# Categorical Features
+contract = st.selectbox("Contract (Month-to-month, One year, Two year)", ["Month-to-month", "One year", "Two year,"Three year"])
+paymentmethod = st.selectbox("Payment Method (Electronic check, Mailed check, Bank transfer, Credit card)", 
+                             ["Electronic check", "Mailed check", "Bank transfer", "Credit card"])
 
-# Combine all features into one input array
-input_data = np.array([[age, gender_val, tenure, balance, num_of_products,
-                        has_cr_card_val, is_active_val, salary,
-                        geo_val, credit_score]])
+# Convert categorical variables to numeric (Label Encoding for binary features)
+contract_val = {"Month-to-month": 0, "One year": 1, "Two year": 2}[contract]
+paymentmethod_val = {"Electronic check": 0, "Mailed check": 1, "Bank transfer": 2, "Credit card": 3}[paymentmethod]
+
+# Combine all features into one input array (only important features)
+input_data = np.array([[age, tenure, monthlycharges, totalcharges, contract_val, paymentmethod_val]])
 
 # Validate number of features
 if input_data.shape[1] != scaler.n_features_in_:
