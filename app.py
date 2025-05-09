@@ -48,7 +48,8 @@ streamingmovies_val = 1 if streamingmovies == "Yes" else 0
 
 # Combine all features into one input array
 input_data = np.array([[tenure, contract_val, monthlycharges, paymentmethod_val, paperlessbilling_val, 
-                        internetservice_val, streamingtv_val, streamingmovies_val]])
+                        internetservice_val, streamingtv_val, streamingmovies_val, 0, 0, 0, 0, 0, 0, 0, 0, 
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
 
 # Validate number of features
 if input_data.shape[1] != scaler.n_features_in_:
