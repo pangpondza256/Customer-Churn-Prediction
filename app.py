@@ -2,12 +2,21 @@ import streamlit as st
 import numpy as np
 import pickle
 
-# Load pre-trained model and scaler
-model = pickle.load(open('churn_model.pkl', 'rb'))
-scaler = pickle.load(open('churn_scaler.pkl', 'rb'))
-
 st.title("📊 Customer Churn Prediction App")
 st.write("Fill in the customer details to predict whether they are likely to churn.")
+
+# Safe unpickling with error handling
+try:
+    model = pickle.load(open('churn_model.pkl', 'rb'))
+except ModuleNotFoundError as e:
+    st.error(f"🚨 Missing module for loading model: `{e.name}`.\nPlease add it to `requirements.txt`.")
+    st.stop()
+
+try:
+    scaler = pickle.load(open('churn_scaler.pkl', 'rb'))
+except ModuleNotFoundError as e:
+    st.error(f"🚨 Missing module for loading scaler: `{e.name}`.\nPlease add it to `requirements.txt`.")
+    st.stop()
 
 # User inputs
 age = st.number_input("Age", min_value=18, max_value=100, value=35)
@@ -36,4 +45,3 @@ if st.button("Predict Churn"):
         st.error("⚠️ This customer is likely to churn.")
     else:
         st.success("✅ This customer is likely to stay.")
-
