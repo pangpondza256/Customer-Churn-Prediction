@@ -1,16 +1,16 @@
 import streamlit as st
 import pandas as pd
-import pickle
+import joblib  # ใช้ joblib สำหรับโหลดไฟล์ที่บีบอัด
 
 st.title("📊 Customer Churn Prediction App")
 st.write("Fill in the customer details to predict if they are likely to churn.")
 
 # --- Load pipeline ---
 try:
-    with open('churn_pipeline.pkl', 'rb') as f:
-        pipeline = pickle.load(f)
+    with open('churn_pipeline_compressed.pkl', 'rb') as f:
+        pipeline = joblib.load(f)
 except FileNotFoundError:
-    st.error("❌ Pipeline file churn_pipeline.pkl not found.")
+    st.error("❌ Pipeline file `churn_pipeline_compressed.pkl` not found.")
     st.stop()
 
 # --- User Inputs ---
