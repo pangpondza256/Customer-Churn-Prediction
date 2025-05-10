@@ -10,7 +10,7 @@ try:
     with open('churn_model.pkl', 'rb') as f:
         model = pickle.load(f)
 except FileNotFoundError:
-    st.error("❌ Model file `churn_model.pkl` not found.")
+    st.error("❌ Model file `churn_model_compressed.pkl` not found.")
     st.stop()
 except ModuleNotFoundError as e:
     st.error(f"❌ Missing module: `{e.name}`. Please add it to `requirements.txt`.")
@@ -18,7 +18,7 @@ except ModuleNotFoundError as e:
 
 # Load scaler safely
 try:
-    with open('churn_scaler.pkl', 'rb') as f:
+    with open('churn_scaler_compressed.pkl.pkl', 'rb') as f:
         scaler = pickle.load(f)
 except FileNotFoundError:
     st.error("❌ Scaler file `churn_scaler.pkl` not found.")
