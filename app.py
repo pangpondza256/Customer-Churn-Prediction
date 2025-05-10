@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-import joblib  # ใช้ joblib สำหรับโหลดไฟล์ที่บีบอัด
+import joblib  
 
 st.title("📊 Customer Churn Prediction App")
 st.write("Fill in the customer details to predict if they are likely to churn.")
@@ -14,6 +14,7 @@ except FileNotFoundError:
     st.stop()
 
 # --- User Inputs ---
+gender = st.selectbox("Gender", ["Male", "Female"])  
 tenure = st.slider("Tenure (months)", 0, 72, 12)
 contract = st.selectbox("Contract", ["Month-to-month", "One year", "Two year"])
 monthlycharges = st.number_input("Monthly Charges", min_value=0.0, value=70.0)
@@ -27,6 +28,7 @@ streamingmovies = st.selectbox("Streaming Movies", ["Yes", "No"])
 
 # --- Convert Inputs to DataFrame ---
 user_data = pd.DataFrame([{
+    "gender": gender,  
     "tenure": tenure,
     "contract": contract,
     "monthlycharges": monthlycharges,
