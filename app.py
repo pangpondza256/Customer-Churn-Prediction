@@ -1,94 +1,70 @@
 import streamlit as st
 import numpy as np
-import pickle
+import joblib
 
-st.title("📊 Customer Churn Prediction App")
-st.write("Fill in the customer details to predict if they are likely to churn.")
+st.title("📉 Customer Churn Prediction (Lightweight)")
+st.write("Predict whether a customer is likely to churn using fewer key features.")
 
-# Load model safely
+# Load compressed model and scaler
 try:
-    with open('churn_model.pkl', 'rb') as f:
-        model = pickle.load(f)
-except FileNotFoundError:
-    st.error("❌ Model file `churn_model.pkl` not found.")
-    st.stop()
-except ModuleNotFoundError as e:
-    st.error(f"❌ Missing module: `{e.name}`.")
+    model = joblib.load("churn_model_compressed.pkl")
+    scaler = joblib.load("churn_scaler_compressed.pkl")
+except Exception as e:
+    st.error(f"❌ Error loading model or scaler: {e}")
     st.stop()
 
-# Load scaler safely
-try:
-    with open('churn_scaler.pkl', 'rb') as f:
-        scaler = pickle.load(f)
-except FileNotFoundError:
-    st.error("❌ Scaler file `churn_scaler.pkl` not found.")
-    st.stop()
-except ModuleNotFoundError as e:
-    st.error(f"❌ Missing module: `{e.name}`.")
-    st.stop()
-
-# --- 🧾 User Inputs ---
-st.subheader("Customer Details")
-gender = st.selectbox("Gender", ["Male", "Female"])
-partner = st.selectbox("Has Partner?", ["Yes", "No"])
+# --- User Inputs (only important features) ---
 tenure = st.slider("Tenure (months)", 0, 72, 12)
-contract = st.selectbox("Contract", ["Month-to-month", "One year", "Two year"])
 monthlycharges = st.number_input("Monthly Charges", min_value=0.0, value=70.0)
-internetservice = st.selectbox("Internet Service", ["DSL", "Fiber optic", "No"])
-streamingtv = st.selectbox("Streaming TV", ["Yes", "No"])
-streamingmovies = st.selectbox("Streaming Movies", ["Yes", "No"])
-paperlessbilling = st.selectbox("Paperless Billing", ["Yes", "No"])
+
+contract = st.selectbox("Contract", ["Month-to-month", "One year", "Two year"])
 paymentmethod = st.selectbox("Payment Method", [
     "Electronic check", "Mailed check", "Bank transfer (automatic)", "Credit card (automatic)"
 ])
+internetservice = st.selectbox("Internet Service", ["DSL", "Fiber optic", "No"])
+techsupport = st.selectbox("Tech Support", ["Yes", "No"])
+streamingtv = st.selectbox("Streaming TV", ["Yes", "No"])
+paperlessbilling = st.selectbox("Paperless Billing", ["Yes", "No"])
 
-# --- 🔁 One-hot Encoding Matching Training ---
-# Manual One-hot Encoding (drop_first=True)
-contract_one_year = 1 if contract == "One year" else 0
-contract_two_year = 1 if contract == "Two year" else 0
+# --- Encoding ---
+contract_map = {
+    "Month-to-month": [0, 0],
+    "One year": [1, 0],
+    "Two year": [0, 1]
+}
+payment_map = {
+    "Electronic check": [0, 0, 0],
+    "Mailed check": [1, 0, 0],
+    "Bank transfer (automatic)": [0, 1, 0],
+    "Credit card (automatic)": [0, 0, 1]
+}
+internet_map = {
+    "DSL": [0, 0],
+    "Fiber optic": [1, 0],
+    "No": [0, 1]
+}
 
-paymentmethod_credit = 1 if paymentmethod == "Credit card (automatic)" else 0
-paymentmethod_electronic = 1 if paymentmethod == "Electronic check" else 0
-paymentmethod_mailed = 1 if paymentmethod == "Mailed check" else 0
-
-internet_fiber = 1 if internetservice == "Fiber optic" else 0
-internet_no = 1 if internetservice == "No" else 0
-
-paperlessbilling_val = 1 if paperlessbilling == "Yes" else 0
-streamingtv_val = 1 if streamingtv == "Yes" else 0
-streamingmovies_val = 1 if streamingmovies == "Yes" else 0
-gender_val = 1 if gender == "Male" else 0
-partner_val = 1 if partner == "Yes" else 0
-
-# --- 🧩 Combine Input (14 features) ---
-input_data = np.array([[
+# Convert categorical inputs to dummy-style vectors
+input_data = [
     tenure,
     monthlycharges,
-    contract_one_year,
-    contract_two_year,
-    paymentmethod_credit,
-    paymentmethod_electronic,
-    paymentmethod_mailed,
-    paperlessbilling_val,
-    internet_fiber,
-    internet_no,
-    streamingtv_val,
-    streamingmovies_val,
-    gender_val,
-    partner_val
-]])
+    *contract_map[contract],
+    *payment_map[paymentmethod],
+    *internet_map[internetservice],
+    1 if techsupport == "Yes" else 0,
+    1 if streamingtv == "Yes" else 0,
+    1 if paperlessbilling == "Yes" else 0
+]
 
-# --- ✅ Check shape before predict ---
-if input_data.shape[1] != scaler.n_features_in_:
-    st.error(f"❌ Feature mismatch: model expects {scaler.n_features_in_} features, but got {input_data.shape[1]}.")
-    st.stop()
+input_np = np.array([input_data])
+input_scaled = scaler.transform(input_np)
 
-# --- ⚙️ Scale and Predict ---
-input_scaled = scaler.transform(input_data)
-
+# --- Predict ---
 if st.button("Predict Churn"):
     prediction = model.predict(input_scaled)[0]
+    prob = model.predict_proba(input_scaled)[0][1]
+    
     if prediction == 1:
-        st.error("⚠️ This customer is likely to churn.")
+        st.error(f"⚠️ This customer is likely to churn. (Confidence: {prob:.2%})")
     else:
-        st.success("✅ This customer is likely to stay.")
+        st.success(f"✅ This customer is likely to stay. (Confidence: {1 - prob:.2%})")
