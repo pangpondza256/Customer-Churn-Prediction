@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import joblib  
 
-st.title("📊 Customer Churn Prediction App")
+st.title("📊 Project2_GroupNo19_Customer Churn Prediction App")
 st.write("Fill in the customer details to predict if they are likely to churn.")
 
 # --- Load pipeline ---
