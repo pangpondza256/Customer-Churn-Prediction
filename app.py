@@ -7,8 +7,8 @@ st.write("Fill in the customer details to predict if they are likely to churn.")
 
 # --- Load pipeline ---
 try:
-    with open('churn_pipeline.pkl', 'rb') as f:
-        pipeline = pickle.load(f)
+    with open('churn_pipeline.pkl', 'wb') as f:
+        pickle.dump(pipeline, f)
 except FileNotFoundError:
     st.error("❌ Pipeline file `churn_pipeline.pkl` not found.")
     st.stop()
