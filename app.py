@@ -5,26 +5,20 @@ import pickle
 st.title("📊 Customer Churn Prediction App")
 st.write("Fill in the customer details to predict if they are likely to churn.")
 
-# Load model safely
+# Load the trained model
 try:
     with open('churn_model.pkl', 'rb') as f:
         model = pickle.load(f)
 except FileNotFoundError:
     st.error("❌ Model file `churn_model.pkl` not found.")
     st.stop()
-except ModuleNotFoundError as e:
-    st.error(f"❌ Missing module: `{e.name}`. Please add it to `requirements.txt`.")
-    st.stop()
 
-# Load scaler safely
+# Load the scaler
 try:
     with open('churn_scaler.pkl', 'rb') as f:
         scaler = pickle.load(f)
 except FileNotFoundError:
     st.error("❌ Scaler file `churn_scaler.pkl` not found.")
-    st.stop()
-except ModuleNotFoundError as e:
-    st.error(f"❌ Missing module: `{e.name}`. Please add it to `requirements.txt`.")
     st.stop()
 
 # --- 🧾 User Inputs ---
@@ -81,9 +75,6 @@ input_data = np.array([[
 ]])
 
 # --- ✅ Validate shape ---
-st.write(f"Expected features: {scaler.n_features_in_}")
-st.write(f"Input features: {input_data.shape[1]}")
-
 if input_data.shape[1] != scaler.n_features_in_:
     st.error(f"❌ Feature mismatch: model expects {scaler.n_features_in_} features, but received {input_data.shape[1]}.")
     st.stop()
